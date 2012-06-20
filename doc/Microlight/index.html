@@ -1,0 +1,394 @@
+<h2>A Small but Useful Lua library</h2>
+
+<p>The Lua standard library is deliberately kept small, based on the abstract platform defined by the C89 standard. It is intended as a base for further development, so Lua programmers tend to collect small useful functions for their projects.</p>
+
+<p>Microlight is an attempt at 'library golf', by analogy to the popular nerd sport 'code golf'. The idea here is to try capture some of these functions in one place and document them well enough so that it is easier to use them than to write them yourself.</p>
+
+<p>This library is mostly based on Penlight, which started out as a practical exercise in reproducing some core parts of the Python libraries for Lua, but subsequently started collecting modules useful for application development, such as configuration file reading, pretty-printing, and so forth. It is mostly my code, together with David Manura, and is very much a personal selection.  There are nearly two dozen modules and hundreds of functions.</p>
+
+<p>In Lua, anything beyond the core involves 'personal' choice, and this list of functions does not claim to aspire to 'canonical' status.  It's the start of a community process to find the Top Thirty useful functions.</p>
+
+<h2>Strings</h2>
+
+<p>THere is no built-in way to show a text representation of a Lua table, which can be frustrating for people first using the interactive prompt. (Please note that globally redefining <code>tostring</code> is <em>not</em> a good idea for Lua application development! This trick is intended to make experimation more satisfying.)</p>
+
+<blockquote>
+  <p>require 'ml'.import()
+tostring = tstring
+= {10,20,name='joe'}
+   {10,20,name="joe"}</p>
+</blockquote>
+
+<p>The Lua string functions are particularly powerful but there are some common functions missing that tend to come up in projects frequently. There is <code>table.concat</code> for building a string out of a table, but no <code>table.split</code> to break a string into a table.</p>
+
+<pre><code>&gt;  = split('hello dolly')
+{"hello","dolly"}
+&gt; = split('one,two',',')
+{"one","two"}
+</code></pre>
+
+<p>The second argument is a <em>string pattern</em> that defaults to spaces.</p>
+
+<p>Although it's not difficult to do <a href="">string interpolation</a> in Lua, there's no little function to do it directly. So Microlight provides <code>ml.expand</code>.</p>
+
+<pre><code>&gt; = expand("hello $you, from $me",{you='dolly',me='joe'})
+hello dolly, from joe
+</code></pre>
+
+<p><code>expand</code> also understands the alternative <code>${var}</code> and may also be given a function, just like <code>string.gsub</code>.</p>
+
+<p>Lua string functions match using string patterns, which are a powerful subset of proper regular expressions: they contain 'magic' characters like '.','$' etc which you need to escape before using. <code>escape</code> is used when you wish to match a string literally:</p>
+
+<pre><code>&gt; = ('woo%'):gsub(escape('%'),'hoo')
+"woohoo"   1
+&gt; = split("1.2.3",escape("."))
+{"1","2","3"}
+</code></pre>
+
+<h2>Files and Paths</h2>
+
+<p>Although <code>access</code> is available on most platforms, it's not part of the standard, (which is why it's spelt <code>_access</code> on Windows). So to test for the existance of a file, you need to attempt to open it. So the <code>exist</code> function is easy to write:</p>
+
+<pre><code>function ml.exists (filename)
+    local f = io.open(filename)
+    if not f then
+        return nil
+    else
+        f:close()
+        return filename
+    end
+end
+</code></pre>
+
+<p>The return value is <em>not</em> a simple true or false; it returns the filename if it exists so we can easily find an existing file out of a group of candidates:</p>
+
+<pre><code>&gt; = exists 'README' or exists 'readme.txt' or exists 'readme.md'
+"readme.md"
+</code></pre>
+
+<p>Lua is good at slicing and dicing text, so a common strategy is to read all of a not-so-big file and process the string. This is the job of <code>readfile</code>. For instance, this returns the first 128 bytes of the file:</p>
+
+<pre><code>&gt; txt = readfile('readme.md'):sub(1,128)
+</code></pre>
+
+<p>Note I said bytes, not characters, since strings can contain any byte sequence. But to be portable you need to say <code>readfile(name,true)</code> to ensure that the file is not read as text.</p>
+
+<p>If <code>readfile</code> can't open a file, or can't read from it, it will return <code>nil</code> and an error message. This is the pattern followed by <code>io.open</code> and many other Lua functions; it is considered bad form to raise an error for a <em>routine</em> problem.</p>
+
+<p>Breaking up paths into their components is done with <code>splitpath</code> and <code>splitext</code>:</p>
+
+<pre><code>&gt; = splitpath(path)
+"/path/to/dogs" "bonzo.txt"
+&gt; = splitext(path)
+"/path/to/dogs/bonzo"   ".txt"
+&gt; = splitpath 'frodo.txt'
+""      "frodo.txt"
+&gt; = splitpath '/usr/'
+"/usr"  ""
+&gt; = splitext '/usr/bin/lua'
+"/usr/bin/lua"  ""
+&gt;
+</code></pre>
+
+<p>These functions return <em>two</em> strings, one of which may be the empty string (rather than <code>nil</code>). On Windows, they use both forward- and back-slashes, on Unix only forward slashes.</p>
+
+<h2>Tables</h2>
+
+<p>Most of the Microlight functions work on Lua tables. Although these may be <em>both</em> arrays <em>and</em> hashmaps, generally we tend to <em>use</em> them as one or the other. From now on, we'll use array and map as shorthand terms for tables</p>
+
+<p><code>update</code> adds key/value pairs to a map, and <code>extend</code> appends an array to an array; they are two complementary ways to add multiple items to a table in a single operation.</p>
+
+<pre><code>&gt; a = {one=1,two=2}
+&gt; update(a,{three=3,four=4})
+&gt; = a
+{one=1,four=4,three=3,two=2}
+&gt; t = {10,20,30}
+&gt; extend(t,{40,50})
+&gt; = t
+{10,20,30,40,50}
+</code></pre>
+
+<p>To insert multiple values into a position within an array, use <code>insertvalues</code>. It works like <code>table.insert</code>, except that the third argument is an array of values. If you do want to overwrite values, then use <code>true</code> for the fourth argument:</p>
+
+<pre><code>&gt; t = {10,20,30,40,50}
+&gt; insertvalues(t,2,{11,12})
+&gt; = t
+{10,11,12,20,30,40,50}
+&gt; insertvalues(t,3,{2,3},true)
+&gt; = t
+{10,11,2,3,30,40,50}
+</code></pre>
+
+<p>(Please note that the <em>original</em> table is modified by these functions.)</p>
+
+<p><code>update' is also known as</code>import<code>and has a few tricks up its sleeve; if the second argument is a string, then it's assumed to be a module name to be passed to</code>require()`. So this both brings in LuaFileSystem and imports its functions into the global table:</p>
+
+<pre><code>&gt; import(_G,'lfs')
+</code></pre>
+
+<p>With a single argument, <code>import</code> brings in the <code>ml</code> table itself. If the first argument is <code>nil</code> then it's assumed to be the global table.</p>
+
+<p>The opposite operation is getting a number of items. There's <code>sub</code>, which works just like <code>string.sub</code> and is the equivalent of list slicing in Python:</p>
+
+<pre><code>&gt; numbers = {10,20,30,40,50}
+&gt; = sub(numbers,1,1)
+{10}
+&gt; = sub(numbers,2)
+{20,30,40,50}
+&gt; = sub(numbers,1,-2)
+{10,20,30,40}
+</code></pre>
+
+<p><code>indexby</code> indexes a table by an array of keys:</p>
+
+<pre><code>&gt; = indexby(numbers,{1,4})
+{10,40}
+&gt; = indexby({one=1,two=2,three=3},{'three','two'})
+{[3,2}
+</code></pre>
+
+<p>Here is the old standby <code>imap</code>, which makes a <em>new</em> array by applying a function to the original elements:</p>
+
+<pre><code>&gt; words = {'one','two','three'}
+&gt; = imap(string.upper,words)
+{"ONE","TWO","THREE"}
+&gt; s = {'10','x','20'}
+&gt; ns = imap(tonumber,s)
+&gt; = ns
+{10,false,20}
+</code></pre>
+
+<p><code>imap</code> must always return an array of the same size - if the function returns <code>nil</code>, then we avoid leaving a hole in the array by using <code>false</code> as a placeholder.</p>
+
+<p>Another popular function <code>indexof</code> does a linear search for a value and returns the 1-based index, or <code>nil</code> if not successful:</p>
+
+<pre><code>&gt; = indexof(numbers,20)
+2
+&gt; = indexof(numbers,234)
+nil
+</code></pre>
+
+<p>This function takes an optional third argument, which is a custom equality function.</p>
+
+<p>In general, you want to match something more than just equality. <code>ifind</code> will return the first value that satisfies the given function.</p>
+
+<pre><code>&gt; s = {'x','10','20','y'}
+&gt; = ifind(s,tonumber)
+"10"
+</code></pre>
+
+<p>The standard function <code>tonumber</code> returns a non-nil value, so the corresponding value is returned - that is, the string. To get all the values that match, use <code>ifilter</code>:</p>
+
+<pre><code>&gt; = ifilter(numbers,tonumber)
+{"10","20"}
+</code></pre>
+
+<p>Finally, <code>removerange</code> removes a <em>range</em> of values from an array, and takes the same arguments as <code>sub</code>.</p>
+
+<h1>Sets and Maps</h1>
+
+<p><code>indexof</code> is not going to be your tool of choice for really big tables, since it does a linear search. Lookup on Lua hash tables is faster, if we can get the data into the right shape.  <code>invert</code> turns a array of values into a table with those values as keys:</p>
+
+<pre><code>&gt; m = invert(numbers)
+&gt; = m
+{[20]=2,[10]=1,[40]=4,[30]=3,[50]=5}
+&gt; = m[20]
+2
+&gt; = m[30]
+3
+&gt; = m[25]
+nil
+&gt; m = invert(words)
+&gt; = m
+{one=1,three=3,two=2}
+</code></pre>
+
+<p>So from a array we get a reverse lookup map. This is also exactly what we want from a <em>set</em>: fast membership test and unique values.</p>
+
+<p>Sets don't particularly care about the actual value, as long as it evaluates as true or false, hence:</p>
+
+<pre><code>&gt; = issubset(m,{one=true,two=true})
+true
+</code></pre>
+
+<p><code>makemap</code> takes another argument and makes up a table where the keys come from the first array and the values from the second array:</p>
+
+<pre><code>&gt; = makemap({'a','b','c'},{1,2,3})
+{a=1,c=3,b=2}
+</code></pre>
+
+<p>Finally, <code>collect</code> makes a array out of an iterator. 'collect_until` can be given the number of values to collect or a custom predicate, which is useful for iterators that never terminate.</p>
+
+<pre><code>&gt; s = 'my dog ate your homework'
+&gt; words = collect(s:gmatch '%a+')
+&gt; = words
+{"my","dog","ate","your","homework"}
+&gt; = collect_until(3,math.random)
+{0.0012512588885159,0.56358531449324,0.19330423902097}
+&gt; lines = collect_until(4,io.lines())
+one
+two
+three
+four
+&gt; = lines
+{"one","two","three","four"}
+</code></pre>
+
+<p>A simple utility to sort standard input looks like this:</p>
+
+<pre><code>require 'ml'.import()
+lines = collect(io.lines())
+table.sort(lines)
+print(table.concat(lines,'\n'))
+</code></pre>
+
+<h1>Higher-order Functions</h1>
+
+<p>Functions are first-class values in Lua, so functions may manipulate them, often called 'higher-order' functions. Function <em>composition</em> is often useful:</p>
+
+<pre><code>&gt; printf = compose(io.write,string.format)
+&gt; printf("the answer is %d\n",42)
+the answer is 42
+</code></pre>
+
+<p><code>bind1</code> and <code>bind2</code> specialize functions by creating a version that has one less argument. <code>bind1</code> gives a function where the first argument is <em>bound</em> to some value. This can be used to pass methods to functions expecting a plain function. In Lua, <code>obj:f()</code> is shorthand for <code>obj.f(obj,...)</code>. Just using a dot is not enough, since there is no <em>implicit binding</em> of the self argument. This is precisely what <code>bind1</code> can do:</p>
+
+<pre><code>&gt; ewrite = bind1(io.stderr.write,io.stderr)
+&gt; ewrite 'hello\n'
+</code></pre>
+
+<p>We want a logging function that writes a message to standard error with a line feed; just bind the second argument to '\n':</p>
+
+<pre><code>&gt; log = bind2(ewrite,'\n')
+&gt; log 'hello'
+hello
+</code></pre>
+
+<p>Note that <code>sub(t,1)</code> does a simple array copy:</p>
+
+<pre><code>&gt; copy = bind2(sub,1)
+&gt; t = {1,2,3}
+&gt; = copy(t)
+{1,2,3}
+</code></pre>
+
+<p>It's easy to make a 'predicate' for detecting empty or blank strings:</p>
+
+<pre><code>&gt; blank = bind2(string.match,'^%s*$')
+&gt; = blank ''
+""
+&gt; = blank '  '
+"  "
+&gt; = blank 'oy vey'
+nil
+</code></pre>
+
+<p>I put 'predicate' in quotes because it's again not classic true/false; Lua actually only developed <code>false</code> fairly late in its career. Operationally, this is a fine predicate because <code>nil</code> matches as 'false' and any string matches as 'true'.</p>
+
+<p>This pattern generates a whole family of classification functions, e.g. <code>hex</code> (using '%x+'), <code>upcase</code> ('%u+'), <code>iden</code> ('%a[%w_]*') and so forth. You can keep the binding game going (after all, <code>bind2</code> is just a function like any other.)</p>
+
+<pre><code>&gt; matcher = bind1(bind2,string.match)
+&gt; hex = matcher '^%x+$'
+</code></pre>
+
+<p>Predicates are particularly useful for <code>ifind</code> and <code>ifilter</code>.  It's now easy to filter out strings from a array that match <code>blank</code> or <code>hex</code>, for instance.</p>
+
+<h2>Classes</h2>
+
+<p>Lua and Javascript have two important things in common; objects are maps, with sugar so that <code>t.key == t['key']</code> and there is no built-in class mechanism. This causes a lot of (iniital) unhappiness. It's straightforward to build a class system, and so it is reinvented numerous times in incompatible ways.</p>
+
+<p><code>class</code> works as expected:</p>
+
+<pre><code>Animal = ml.class()
+Animal.sound = '?'
+
+function Animal:_init(name)
+    self.name = name
+end
+
+function Animal:speak()
+    return self._class.sound..' I am '..self.name
+end
+
+Cat = class(Animal)
+Cat.sound = 'meow'
+
+felix = Cat('felix')
+
+assert(felix:speak() == 'meow I am felix')
+assert(felix._base == Animal)
+assert(Cat.class_of(felix))
+assert(Animal.class_of(felix))
+</code></pre>
+
+<p>It creates a table (what else?) which will contain the methods; if there's a base class, then that will be copied into the table. This table becomes the metatable of each new instance of that class, with <code>__index</code> pointing to the metatable itself. If <code>obj.key</code> is not found, then Lua will attempt to look it up in the class. In this way, each object does not have to carry references to all of its methods, which gets inefficient.</p>
+
+<p>The class is callable, and when called it returns a new object; if there is an <code>_init</code> method that will be called to do any custom setup; if not then the base class constructor will be called.</p>
+
+<p>All classes have a <code>_class</code> field pointing to itself (which is how <code>Animal.speak</code> gets its polymorphic behaviour) and a <code>class_of</code> function.</p>
+
+<h2>Array Class</h2>
+
+<p>Since Lua 5.1, the string functions can be called as methods, e.g. <code>s:sub(1,2)</code>. People commonly would like this convenience for tables as well. But Lua tables are building blocks; to build abstract data types you need to specialize your tables. So <code>ml</code> provides a <code>Array</code> class:</p>
+
+<pre><code>local Array = ml.class()
+
+-- A constructor can return a _specific_ object
+function Array:_init(t)
+    if not t then return nil end  -- no table, make a new one
+    if getmetatable(t)==Array then  -- was already a Array: copy constructor!
+        t = ml.sub(t,1)
+    end
+    return t
+end
+
+function Array:map(f,...) return Array(ml.imap(f,self,...)) end
+</code></pre>
+
+<p>Note that if a constructor <em>does</em> return a value, then it becomes the new object. This flexibility is useful if you want to wrap <em>existing</em> objects.</p>
+
+<p>We can't just add <code>imap</code>, because the function signature is wrong; the first argument is the function and it returns a plain jane array.</p>
+
+<p>But we can add methods to the class directly if the functions have the right first argument, and don't return anything:</p>
+
+<pre><code>local C=ml.compose
+
+ml.import(Array,{
+    -- straight from the table library
+    concat=table.concat,sort=table.sort,insert=table.insert,
+    remove=table.remove,append=table.insert,
+    -- straight from ml
+    indexof=ml.indexof, find=ml.ifind, extend=ml.extend,
+    -- originals return table; these versions make the tables into arrays.
+    filter=C(Array,ml.ifilter),
+    sub=C(Array,ml.sub),
+    indexby=C(Array,ml.indexby),
+})
+</code></pre>
+
+<p><code>ifilter</code> and <code>sub</code> are almost right, but they need to be wrapped so that they return Arrays as expected.</p>
+
+<pre><code>&gt; words = Array{'frodo','bilbo','sam'}
+&gt; = words:sub(2)
+{"bilbo","sam"}
+&gt; words:sort()
+&gt; = words
+{"bilbo","frodo","sam"}
+&gt; = words:concat ','
+"bilbo,frodo,sam"
+&gt; = words:filter(string.match,'o$'):map(string.upper)
+{"BILBO","FRODO"}
+</code></pre>
+
+<p>Arrays are easier to use and involve less typing because the table functions are directly available from them. Methods may be <em>chained</em>, which (I think) reads better than the usual functional application order from right to left.</p>
+
+<pre><code>&gt; l = Array.range(10,50,10)
+&gt; = l:indexof(30)
+3
+&gt; = l:indexby {1,3,5}
+{10,30,50}
+&gt; = l:map(function(x) return x + 1 end)
+{11,21,31,41,51}
+</code></pre>
+
+<p>Lua anonymous functions have a somewhat heavy syntax; three keywords needed to define a short lambda.  It would be cool if the shorthand syntax <code>|x| x+1</code> used by Metalua would make into mainstream Lua, but there seems to be widespread resistance to this litle convenience.</p>

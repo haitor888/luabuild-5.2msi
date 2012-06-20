@@ -78,6 +78,9 @@
 				<Component Id='lua.lpeg' Guid='624B3534-4DD4-4AA8-BED1-51E343018A2F' >
 					<File Id='lua.re.lua' Name='re.lua' />
 				</Component>
+				<Component Id='lua.ml' Guid='2AEBA1F6-EC24-47F9-A10F-51C35510FF22' >
+					<File Id='lua.ml.lua' Name='ml.lua' />
+				</Component>
 			</Directory>			
 			<Directory Id='doc' Name='doc' FileSource='../doc'>
 				<Directory Id='doc.lua52' Name='Lua5.2'>
@@ -139,6 +142,11 @@
 						<File Id='doc.lpeg.lpeg128.gif' Name='lpeg-128.gif' />
 						<File Id='doc.lpeg.lpeg.html'    Name='lpeg.html' />
 						<File Id='doc.lpeg.re.html'      Name='re.html' />
+					</Component>
+				</Directory>
+				<Directory Id='doc.ml' Name='Microlight'>
+					<Component Id='doc.ml' Guid='1A5280F7-E286-41AA-AC22-B1BB555DF0E5'>
+						<File Id='doc.ml.index.html'    Name='index.html' />
 					</Component>
 				</Directory>
 
@@ -225,6 +233,13 @@
 		        <RemoveFolder Id="shortcut.doc.lpeg" On="uninstall"/>
 		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="lpeg" Type="integer" Value="1" KeyPath="yes"/>
 		    	</Component>
+		    	<Component Id="shortcut.doc.ml" Guid="91B709A9-77E5-4632-A433-4D753E2C35CC">
+		        <Shortcut Id="shortcut.doc.ml" Name="Microlight"
+	                  Description="Documentation for Microlight library"
+	                  Target="[doc.ml]index.html" Icon='HelpIcon'/>
+		        <RemoveFolder Id="shortcut.doc.ml" On="uninstall"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="ml" Type="integer" Value="1" KeyPath="yes"/>
+		    	</Component>
 		    </Directory>
 		</DirectoryRef>
 		
@@ -276,6 +291,11 @@
   			<ComponentRef Id='lua.lpeg' />
   			<ComponentRef Id='doc.lpeg' />
   			<ComponentRef Id='shortcut.doc.lpeg' />
+  		</Feature>
+  		<Feature Id='ml' Title='Microlight' Level='1'>						
+  			<ComponentRef Id='lua.ml' />
+  			<ComponentRef Id='doc.ml' />
+  			<ComponentRef Id='shortcut.doc.ml' />
   		</Feature>
 		</Feature>
 	</Product>
