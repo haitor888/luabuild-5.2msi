@@ -25,21 +25,45 @@
 
 
 		<DirectoryRef Id='APPLICATIONFOLDER'>
-				<Component Id='lua52.exe' Guid='3CA59152-6D3B-48C4-9D1D-FE6F20B84F70' >
+				<Component Id='bin.lua52' Guid='3CA59152-6D3B-48C4-9D1D-FE6F20B84F70' >
 					<File Name='lua52.exe' Source='../bin/lua52.exe' Checksum='yes'/>
 					<File Name='lua52.dll' Source='../bin/lua52.dll' Checksum='yes'/>
 				</Component>
-				<Component Id='readline.dll' Guid='15E38374-1D30-4797-A4AD-CE9FEF279A28' >
+				<Component Id='bin.readline' Guid='15E38374-1D30-4797-A4AD-CE9FEF279A28' >
 					<File Name='readline6.dll' Source='res/readline6.dll'  Checksum='yes'/>
 					<File Name='lreadline.dll' Source='res/lreadline.dll'  Checksum='yes'/>
 				</Component>
+			<Directory Id='socket' Name='socket' FileSource='../lib/socket'>
+				<Component Id='bin.socket' Guid='2A866673-89EE-4EAE-A399-FD0FC37841B7' >
+					<File Id='bin.socket.core.dll' Name='core.dll' Checksum='yes'/>
+				</Component>
+			</Directory>			
+			<Directory Id='mime' Name='mime' FileSource='../lib/mime'>
+				<Component Id='bin.mime' Guid='7AAF505B-7F3F-4477-AE1D-DDEBBA3FEF5A' >
+					<File Id='bin.mime.core.dll' Name='core.dll' Checksum='yes'/>
+				</Component>
+			</Directory>			
 			<Directory Id='lua' Name='lua' FileSource='../lua'>
 					<Component Id='lua.utils' Guid='A6D55CD0-A92F-4DFA-A9C0-D7B6298EE057' >
-						<File Id='lua.utils.lua'   Name='utils.lua' Source='res/utils.lua' />
+						<File Name='utils.lua' Source='res/utils.lua' />
 					</Component>
+				<Component Id='lua.socket.main' Guid='AA1E0509-4868-4C6B-A6DB-164CCCDC951E' >
+ 					<File Name='socket.lua' />
+ 					<File Name='ltn12.lua' />
+ 					<File Name='mime.lua' />
+ 				</Component>
+				<Directory Id='lua.socket' Name='socket' FileSource='../lua/socket'>
+					<Component Id='lua.socket.dir' Guid='D7E57C08-077D-4A33-9580-28D3121308AE' >
+  					<File Name='ftp.lua' />
+  					<File Name='http.lua' />
+  					<File Name='smtp.lua' />
+  					<File Name='tp.lua' />
+  					<File Name='url.lua' />
+					</Component>
+  	    </Directory>			
 			</Directory>			
 			<Directory Id='doc' Name='doc' FileSource='../doc'>
-				<Directory Id='Lua5.2' Name='Lua5.2'>
+				<Directory Id='doc.lua52' Name='Lua5.2'>
 					<Component Id='doc.lua52' Guid='EB7D6BA8-2E3F-4FB1-BB51-8D93A52E15F0' >
 						<File Id='doc.lua.contents.html'   Name='contents.html' />
 						<File Id='doc.lua.logo.gif'        Name='logo.gif' />
@@ -50,7 +74,7 @@
 					</Component>
 				</Directory>
 				<Directory Id='LuaFileSystem' Name='LuaFileSystem'>
-					<Component Id='doc.LuaFileSystem' Guid='33DF296D-4731-475F-B01C-D7C7F41EA39D' >
+					<Component Id='doc.lfs' Guid='33DF296D-4731-475F-B01C-D7C7F41EA39D' >
 						<File Id='doc.lfs.examples.html'       Name='examples.html' />
 						<File Id='doc.lfs.index.html'          Name='index.html' />
 						<File Id='doc.lfs.license.html'        Name='license.html' />
@@ -58,7 +82,7 @@
 						<File Id='doc.lfs.manual.html'         Name='manual.html' />
 					</Component>
 				</Directory>
-				<Directory Id='LuaSQL' Name='LuaSQL'>
+				<Directory Id='doc.sql' Name='LuaSQL'>
 					<Component Id='doc.sql' Guid='53AFA8A7-D5E0-4F65-98A4-D8CCF568E34E'>
 						<File Id='doc.sql.examples.html'    Name='examples.html' />
 						<File Id='doc.sql.history.html'     Name='history.html' />
@@ -88,6 +112,11 @@
 						<File Id='doc.socket.url.html'             Name='url.html'          />
 					</Component>
 				</Directory>
+				<Directory Id='doc.sqlite3' Name='Sqlite3'>
+					<Component Id='doc.sqlite3' Guid='00F15C6E-50F9-4B1A-BAD2-FB676F944112'>
+						<File Id='doc.sqlite3.lsqlite3.html'    Name='lsqlite3.html' />
+					</Component>
+				</Directory>
 
 			</Directory>
 		</DirectoryRef>
@@ -107,7 +136,7 @@
 		</DirectoryRef>
 
 		<DirectoryRef Id="ApplicationProgramsFolder">
-		    <Component Id="ApplicationShortcut" Guid="46D3256C-04B1-4891-A796-6F65A839E088">
+		    <Component Id="shortcut.lua52" Guid="46D3256C-04B1-4891-A796-6F65A839E088">
 		        <Shortcut Id="ApplicationStartMenuShortcut" 
 		                  Name="Lua 5.2"
 		                  Description="a powerful, fast, lightweight, embeddable scripting language"
@@ -133,7 +162,7 @@
 		    	<Component Id="shortcut.doc.lua52" Guid="F97C8305-402A-4971-95E7-F4B3E20316D2">
 		        <Shortcut Id="shortcut.doc.lua52" Name="Lua 5.2"
 	                  Description="Official documentation of Lua 5.2 from Lua.org"
-	                  Target="[Lua5.2]contents.html" Icon='HelpIcon'/>
+	                  Target="[doc.lua52]contents.html" Icon='HelpIcon'/>
 		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="core" Type="integer" Value="1" KeyPath="yes"/>
 		        <RemoveFolder Id="shortcut.doc.lua52" On="uninstall"/>
 		    	</Component>
@@ -154,25 +183,49 @@
 		    	<Component Id="shortcut.doc.sql" Guid="856E4582-AB95-411F-B613-277C2876B847">
 		        <Shortcut Id="shortcut.doc.sql" Name="LuaSQL"
 	                  Description="Documentation of LuaSQL and ODBC module"
-	                  Target="[LuaSQL]index.html" Icon='HelpIcon'/>
+	                  Target="[doc.sql]index.html" Icon='HelpIcon'/>
 		        <RemoveFolder Id="shortcut.doc.sql" On="uninstall"/>
 		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="sql" Type="integer" Value="1" KeyPath="yes"/>
+		    	</Component>
+		    	<Component Id="shortcut.doc.sqlite3" Guid="CD74CD69-09E4-456D-9C2F-B1E9CAE66C55">
+		        <Shortcut Id="shortcut.doc.sqlite3" Name="LuaSQLite 3"
+	                  Description="Documentation of SQLite3 binding for Lua"
+	                  Target="[doc.sqlite3]lsqlite3.html" Icon='HelpIcon'/>
+		        <RemoveFolder Id="shortcut.doc.sqlite3" On="uninstall"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="sqlite3" Type="integer" Value="1" KeyPath="yes"/>
 		    	</Component>
 		    </Directory>
 		</DirectoryRef>
 		
-		<Feature Id='Binaries' Title='Binaries' Level='1'>
-			<Feature Id='core' Title='Main executable' Level='1'>			
-				<ComponentRef Id='lua52.exe' />
+		<Feature Id='core' Title='Core features' Level='1'>
+			<Feature Id='lua52' Title='Lua 5.2' Level='1'>			
+				<ComponentRef Id='bin.lua52' />
 				<ComponentRef Id='doc.lua52' />
 				<ComponentRef Id='shortcut.doc.lua52' />
+				<ComponentRef Id='shortcut.lua52' />
 			</Feature>
-			<Feature Id='readline.dll' Title='History and completion support' Level='1'>			
-				<ComponentRef Id='readline.dll' />
+			<Feature Id='UpdatePath' Title='Add Lua 5.2 to PATH' Level='1'>			
+				<ComponentRef Id='UpdatePath' />
+			</Feature>
+			<Feature Id='registry.lua' Title='Register .lua extension with Lua 5.2' Level='1'>						
+        <ComponentRef Id='registry.lua' />
+		  </Feature>				
+  </Feature>
+		<Feature Id='modules' Title='Additional modules' Level='1'>
+			<Feature Id='readline' Title='History and completion support' Level='1'>			
+				<ComponentRef Id='bin.readline' />
 				<ComponentRef Id='lua.utils' />
 				<ComponentRef Id='shortcut.readline' />
 			</Feature>
-			<Feature Id='socket' Title='LuaSocket' Level='1'>			
+  		<Feature Id='lfs' Title='LuaFileSystem' Level='1'>						
+  			<ComponentRef Id='doc.lfs' />
+  			<ComponentRef Id='shortcut.doc.lfs' />
+  		</Feature>
+  			<Feature Id='socket' Title='LuaSocket' Level='1'>			
+				<ComponentRef Id='bin.socket' />
+				<ComponentRef Id='bin.mime' />
+				<ComponentRef Id='lua.socket.main' />
+				<ComponentRef Id='lua.socket.dir' />
 				<ComponentRef Id='doc.socket' />
 				<ComponentRef Id='shortcut.doc.socket' />
 			</Feature>
@@ -180,21 +233,10 @@
 				<ComponentRef Id='doc.sql' />
 				<ComponentRef Id='shortcut.doc.sql' />
 			</Feature>
-			<Feature Id='UpdatePath' Title='Add Lua 5.2 to PATH' Level='1'>			
-				<ComponentRef Id='UpdatePath' />
+			<Feature Id='sqlite3' Title='LuaSQLite 3' Level='1'>			
+				<ComponentRef Id='doc.sqlite3' />
+				<ComponentRef Id='shortcut.doc.sqlite3' />
 			</Feature>
-		</Feature>
-		<Feature Id='Documentation' Title='Documentation' Level='1'>						
-			<ComponentRef Id='doc.LuaFileSystem' />
-			<ComponentRef Id='shortcut.doc.lfs' />
-		</Feature>
-		<Feature Id='RegistryEntries' Title='Registers known extensions' Level='1'>						
-			<Feature Id='registry.lua' Title='.lua (Lua scripts)' Level='1'>						
-				<ComponentRef Id='registry.lua' />
-			</Feature>				
-		</Feature>
-		<Feature Id='Shortcut' Title='Shortcut in Startup menu' Level='1'>						
-			<ComponentRef Id='ApplicationShortcut' />
 		</Feature>
 	</Product>
 </Wix>
