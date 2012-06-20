@@ -24,15 +24,24 @@
 	    <Property Id="ARPPRODUCTICON" Value="LuaIcon" />
 
 
-		<DirectoryRef Id='APPLICATIONFOLDER'>
-				<Component Id='bin.lua52' Guid='3CA59152-6D3B-48C4-9D1D-FE6F20B84F70' >
-					<File Name='lua52.exe' Source='../bin/lua52.exe' Checksum='yes'/>
-					<File Name='lua52.dll' Source='../bin/lua52.dll' Checksum='yes'/>
-				</Component>
-				<Component Id='bin.readline' Guid='15E38374-1D30-4797-A4AD-CE9FEF279A28' >
-					<File Name='readline6.dll' Source='res/readline6.dll'  Checksum='yes'/>
-					<File Name='lreadline.dll' Source='res/lreadline.dll'  Checksum='yes'/>
-				</Component>
+		<DirectoryRef Id='APPLICATIONFOLDER' FileSource='../lib'>
+			<Component Id='bin.lua52' Guid='3CA59152-6D3B-48C4-9D1D-FE6F20B84F70' >
+				<File Name='lua52.exe' Source='../bin/lua52.exe' Checksum='yes'/>
+				<File Name='lua52.dll' Source='../bin/lua52.dll' Checksum='yes'/>
+			</Component>
+			<Component Id='bin.readline' Guid='15E38374-1D30-4797-A4AD-CE9FEF279A28' >
+				<File Name='readline6.dll' Source='res/readline6.dll'  Checksum='yes'/>
+				<File Name='lreadline.dll' Source='res/lreadline.dll'  Checksum='yes'/>
+			</Component>
+			<Component Id='bin.lpeg' Guid='58D966C2-15FA-4FFC-A03A-F4B29C6DCC9A' >
+				<File Name='lpeg.dll' Checksum='yes'/>
+			</Component>
+			<Component Id='bin.lfs' Guid='FB82E722-7FFA-4C18-9B36-6457BBCEBA33' >
+				<File Name='lfs.dll' Checksum='yes'/>
+			</Component>
+			<Component Id='bin.sqlite3' Guid='19EA74F1-4533-47B6-8542-1B5068EEF7A2' >
+				<File Name='lsqlite3.dll' Checksum='yes'/>
+			</Component>
 			<Directory Id='socket' Name='socket' FileSource='../lib/socket'>
 				<Component Id='bin.socket' Guid='2A866673-89EE-4EAE-A399-FD0FC37841B7' >
 					<File Id='bin.socket.core.dll' Name='core.dll' Checksum='yes'/>
@@ -43,24 +52,32 @@
 					<File Id='bin.mime.core.dll' Name='core.dll' Checksum='yes'/>
 				</Component>
 			</Directory>			
+			<Directory Id='luasql' Name='luasql' FileSource='../lib/luasql'>
+				<Component Id='bin.sql' Guid='EEDA30FD-5E58-4686-8613-6EA8CE9B494C' >
+					<File Id='bin.luasql.odbc.dll' Name='odbc.dll' Checksum='yes'/>
+				</Component>
+			</Directory>			
 			<Directory Id='lua' Name='lua' FileSource='../lua'>
-					<Component Id='lua.utils' Guid='A6D55CD0-A92F-4DFA-A9C0-D7B6298EE057' >
-						<File Name='utils.lua' Source='res/utils.lua' />
-					</Component>
+				<Component Id='lua.readline' Guid='A6D55CD0-A92F-4DFA-A9C0-D7B6298EE057' >
+					<File Id='lua.utils.lua' Name='utils.lua' Source='res/utils.lua' />
+				</Component>
 				<Component Id='lua.socket.main' Guid='AA1E0509-4868-4C6B-A6DB-164CCCDC951E' >
- 					<File Name='socket.lua' />
- 					<File Name='ltn12.lua' />
- 					<File Name='mime.lua' />
+ 					<File Id='lua.socket.lua' Name='socket.lua' />
+ 					<File Id='lua.ltn12.lua'  Name='ltn12.lua'  />
+ 					<File Id='lua.mime.lua'   Name='mime.lua'   />
  				</Component>
 				<Directory Id='lua.socket' Name='socket' FileSource='../lua/socket'>
 					<Component Id='lua.socket.dir' Guid='D7E57C08-077D-4A33-9580-28D3121308AE' >
-  					<File Name='ftp.lua' />
-  					<File Name='http.lua' />
-  					<File Name='smtp.lua' />
-  					<File Name='tp.lua' />
-  					<File Name='url.lua' />
+  					<File Id='lua.socket.ftp.lua'  Name='ftp.lua' />
+  					<File Id='lua.socket.http.lua' Name='http.lua' />
+  					<File Id='lua.socket.smtp.lua' Name='smtp.lua' />
+  					<File Id='lua.socket.tp.lua'   Name='tp.lua' />
+  					<File Id='lua.socket.url.lua'  Name='url.lua' />
 					</Component>
   	    </Directory>			
+				<Component Id='lua.lpeg' Guid='624B3534-4DD4-4AA8-BED1-51E343018A2F' >
+					<File Id='lua.re.lua' Name='re.lua' />
+				</Component>
 			</Directory>			
 			<Directory Id='doc' Name='doc' FileSource='../doc'>
 				<Directory Id='doc.lua52' Name='Lua5.2'>
@@ -115,6 +132,13 @@
 				<Directory Id='doc.sqlite3' Name='Sqlite3'>
 					<Component Id='doc.sqlite3' Guid='00F15C6E-50F9-4B1A-BAD2-FB676F944112'>
 						<File Id='doc.sqlite3.lsqlite3.html'    Name='lsqlite3.html' />
+					</Component>
+				</Directory>
+				<Directory Id='doc.lpeg' Name='LPeg'>
+					<Component Id='doc.lpeg' Guid='A5DFF046-D800-436A-889C-4934A3CECC36'>
+						<File Id='doc.lpeg.lpeg128.gif' Name='lpeg-128.gif' />
+						<File Id='doc.lpeg.lpeg.html'    Name='lpeg.html' />
+						<File Id='doc.lpeg.re.html'      Name='re.html' />
 					</Component>
 				</Directory>
 
@@ -194,6 +218,13 @@
 		        <RemoveFolder Id="shortcut.doc.sqlite3" On="uninstall"/>
 		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="sqlite3" Type="integer" Value="1" KeyPath="yes"/>
 		    	</Component>
+		    	<Component Id="shortcut.doc.lpeg" Guid="D024FEA8-AEC7-4257-AAD9-CC1A969F784C">
+		        <Shortcut Id="shortcut.doc.lpeg" Name="LPeg"
+	                  Description="Documentation for Parsing Expression Grammars"
+	                  Target="[doc.lpeg]lpeg.html" Icon='HelpIcon'/>
+		        <RemoveFolder Id="shortcut.doc.lpeg" On="uninstall"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="lpeg" Type="integer" Value="1" KeyPath="yes"/>
+		    	</Component>
 		    </Directory>
 		</DirectoryRef>
 		
@@ -214,14 +245,15 @@
 		<Feature Id='modules' Title='Additional modules' Level='1'>
 			<Feature Id='readline' Title='History and completion support' Level='1'>			
 				<ComponentRef Id='bin.readline' />
-				<ComponentRef Id='lua.utils' />
+				<ComponentRef Id='lua.readline' />
 				<ComponentRef Id='shortcut.readline' />
 			</Feature>
   		<Feature Id='lfs' Title='LuaFileSystem' Level='1'>						
+  			<ComponentRef Id='bin.lfs' />
   			<ComponentRef Id='doc.lfs' />
   			<ComponentRef Id='shortcut.doc.lfs' />
   		</Feature>
-  			<Feature Id='socket' Title='LuaSocket' Level='1'>			
+			<Feature Id='socket' Title='LuaSocket' Level='1'>			
 				<ComponentRef Id='bin.socket' />
 				<ComponentRef Id='bin.mime' />
 				<ComponentRef Id='lua.socket.main' />
@@ -230,13 +262,21 @@
 				<ComponentRef Id='shortcut.doc.socket' />
 			</Feature>
 			<Feature Id='sql' Title='LuaSQL' Level='1'>			
+				<ComponentRef Id='bin.sql' />
 				<ComponentRef Id='doc.sql' />
 				<ComponentRef Id='shortcut.doc.sql' />
 			</Feature>
 			<Feature Id='sqlite3' Title='LuaSQLite 3' Level='1'>			
+				<ComponentRef Id='bin.sqlite3' />
 				<ComponentRef Id='doc.sqlite3' />
 				<ComponentRef Id='shortcut.doc.sqlite3' />
 			</Feature>
+  		<Feature Id='lpeg' Title='LPeg' Level='1'>						
+  			<ComponentRef Id='bin.lpeg' />
+  			<ComponentRef Id='lua.lpeg' />
+  			<ComponentRef Id='doc.lpeg' />
+  			<ComponentRef Id='shortcut.doc.lpeg' />
+  		</Feature>
 		</Feature>
 	</Product>
 </Wix>
