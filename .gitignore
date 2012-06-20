@@ -5,5 +5,8 @@ lib/
 bin/
 lua/
 test/
-
-
+*.tests
+*.spec
+*.bak
+current_modules
+lua-5.2.1/linit.c
