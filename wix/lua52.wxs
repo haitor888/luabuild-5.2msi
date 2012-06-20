@@ -11,6 +11,9 @@
 			<Directory Id='ProgramFilesFolder' Name="[ApplicationFolderName]" >
 				<Directory Id='APPLICATIONFOLDER' Name='Lua' />
 			</Directory>
+			<Directory Id="ProgramMenuFolder">
+			    <Directory Id="ApplicationProgramsFolder" Name="Lua 5.2"/>
+			</Directory>
 		</Directory>
 	    <Property Id="ApplicationFolderName" Value="Lua\5.2" />
 	    <Property Id="ALLUSERS" Value="2" />
@@ -26,6 +29,9 @@
 				<Component Id='lua52.exe' Guid='3Ca59152-6D3B-48C4-9D1D-Fe6F20B84F70' >
 					<File Name='lua52.exe' Source='../bin/lua52.exe' Checksum='yes'/>
 					<File Name='lua52.dll' Source='../bin/lua52.dll' Checksum='yes'/>
+				</Component>
+				<Component Id='readline6.dll' Guid='15E38374-1D30-4797-A4Ad-Ce9Fef279A28' >
+					<File Name='readline6.dll' Source='res/readline6.dll'  Checksum='yes'/>
 				</Component>
 			</Directory>
 		</DirectoryRef>
@@ -43,10 +49,30 @@
 		    </RegistryKey>
 			</Component>
 		</DirectoryRef>
+
+		<DirectoryRef Id="ApplicationProgramsFolder">
+		    <Component Id="ApplicationShortcut" Guid="46D3256C-04B1-4891-A796-6F65A839E088">
+		        <Shortcut Id="ApplicationStartMenuShortcut" 
+		                  Name="Lua 5.2"
+		                  Description="a powerful, fast, lightweight, embeddable scripting language"
+		                  Target="[bin]lua52.exe"
+		                  WorkingDirectory="bin" Icon='LuaIcon'/>
+				<Shortcut Id="UninstallProduct"             
+				          Name="Uninstall LuaDura"
+				          Target="[SystemFolder]msiexec.exe"
+				          Arguments="/x [ProductCode]"
+				          Description="Uninstalls Lua 5.2" />		                  
+		        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+		    </Component>
+		</DirectoryRef>
 		
 		<Feature Id='Binaries' Title='Binaries' Level='1'>
 			<Feature Id='LuaDura.exe' Title='Main executable' Level='1'>			
 				<ComponentRef Id='lua52.exe' />
+			</Feature>
+			<Feature Id='readline6.dll' Title='History and completion support' Level='1'>			
+				<ComponentRef Id='readline6.dll' />
 			</Feature>
 			<Feature Id='UpdatePath' Title='Add LuaDura to PATH' Level='1'>			
 				<ComponentRef Id='UpdatePath' />
@@ -56,6 +82,9 @@
 			<Feature Id='registry.lua' Title='.lua (Lua scripts)' Level='1'>						
 				<ComponentRef Id='registry.lua' />
 			</Feature>				
+		</Feature>
+		<Feature Id='Shortcut' Title='Shortcut in Startup menu' Level='1'>						
+			<ComponentRef Id='ApplicationShortcut' />
 		</Feature>
 	</Product>
 </Wix>
