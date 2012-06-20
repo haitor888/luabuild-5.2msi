@@ -25,15 +25,19 @@
 
 
 		<DirectoryRef Id='APPLICATIONFOLDER'>
-			<Directory Id='bin' Name='bin'>
 				<Component Id='lua52.exe' Guid='3CA59152-6D3B-48C4-9D1D-FE6F20B84F70' >
 					<File Name='lua52.exe' Source='../bin/lua52.exe' Checksum='yes'/>
 					<File Name='lua52.dll' Source='../bin/lua52.dll' Checksum='yes'/>
 				</Component>
-				<Component Id='readline6.dll' Guid='15E38374-1D30-4797-A4AD-CE9FEF279A28' >
+				<Component Id='readline.dll' Guid='15E38374-1D30-4797-A4AD-CE9FEF279A28' >
 					<File Name='readline6.dll' Source='res/readline6.dll'  Checksum='yes'/>
+					<File Name='lreadline.dll' Source='res/lreadline.dll'  Checksum='yes'/>
 				</Component>
-			</Directory>
+			<Directory Id='lua' Name='lua' FileSource='../lua'>
+					<Component Id='lua.utils' Guid='A6D55CD0-A92F-4DFA-A9C0-D7B6298EE057' >
+						<File Id='lua.utils.lua'   Name='utils.lua' Source='res/utils.lua' />
+					</Component>
+			</Directory>			
 			<Directory Id='doc' Name='doc' FileSource='../doc'>
 				<Directory Id='Lua5.2' Name='Lua5.2'>
 					<Component Id='doc.Lua5.2' Guid='EB7D6BA8-2E3F-4FB1-BB51-8D93A52E15F0' >
@@ -59,14 +63,14 @@
 
 		<DirectoryRef Id="TARGETDIR">
 			<Component Id='UpdatePath' Guid='D6710230-E962-41F3-B41A-25E8ACE2F2D4' >
-				<Environment Id='UpdatePath' Name='PATH' Action='set' Permanent='no' System='yes' Part='last' Value='[bin]' />
+				<Environment Id='UpdatePath' Name='PATH' Action='set' Permanent='no' System='yes' Part='last' Value='[APPLICATIONFOLDER]' />
 			</Component>
 		  <Component Id="registry.lua" Guid="AD0C5631-33E5-427A-9B5D-2D4612AB0E5B">
 		    <RegistryKey Root="HKCR" Key=".lua" Action="create">
-		        <RegistryValue Type="string" Value="Lua.Lua.run"/>
+		        <RegistryValue Type="string" Value="Lua.Script.run"/>
 		    </RegistryKey>
-		    <RegistryKey Root="HKCR" Key="Lua.Lua.run\shell\open\command" Action="create">
-		        <RegistryValue Type="string" Value="&quot;[bin]lua52.exe&quot; -i &quot;%1&quot;"/>
+		    <RegistryKey Root="HKCR" Key="Lua.Script.run\shell\open\command" Action="create">
+		        <RegistryValue Type="string" Value="&quot;[APPLICATIONFOLDER]lua52.exe&quot; -i &quot;%1&quot;"/>
 		    </RegistryKey>
 			</Component>
 		</DirectoryRef>
@@ -76,15 +80,23 @@
 		        <Shortcut Id="ApplicationStartMenuShortcut" 
 		                  Name="Lua 5.2"
 		                  Description="a powerful, fast, lightweight, embeddable scripting language"
-		                  Target="[bin]lua52.exe"
-		                  WorkingDirectory="bin" Icon='LuaIcon'/>
-				<Shortcut Id="UninstallProduct"             
+		                  Target="[APPLICATIONFOLDER]lua52.exe"
+		                  Icon='LuaIcon'/>
+				    <Shortcut Id="UninstallProduct"             
 				          Name="Uninstall LuaDura"
 				          Target="[SystemFolder]msiexec.exe"
 				          Arguments="/x [ProductCode]"
 				          Description="Uninstalls Lua 5.2" />		                  
 		        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
-		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed" Name="core" Type="integer" Value="1" KeyPath="yes"/>
+		    </Component>
+		    <Component Id="shortcut.readline" Guid="7C8CA172-19FB-4A4F-AE48-381B4C214B45">
+		        <Shortcut Id="shortcut.readline.lua" 
+		                  Name="Lua 5.2 with completion"
+		                  Description="Lua with Readline based completion"
+		                  Target="[APPLICATIONFOLDER]lua52.exe" Arguments=' -l lreadline -l utils -e "lreadline.cmd()"'
+		                  Icon='LuaIcon'/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed" Name="completion" Type="integer" Value="1" KeyPath="yes"/>
 		    </Component>
 		    <Component Id="shortcut.doc" Guid="F97C8305-402A-4971-95E7-F4B3E20316D2">
 		        <Shortcut Id="shortcut.lua.reference" Name="Lua 5.2 Reference Manual"
@@ -94,7 +106,7 @@
 	                  Description="Documentation of Kepler's LuaFileSystem (lfs) module"
 	                  Target="[LuaFileSystem]index.html" Icon='HelpIcon'/>
 		        <RemoveFolder Id="shortcut.doc" On="uninstall"/>
-		        <RegistryValue Root="HKCU" Key="Software\Olivetti\LuaDura" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed" Name="documentation" Type="integer" Value="1" KeyPath="yes"/>
 		    </Component>
 		</DirectoryRef>
 		
@@ -102,10 +114,12 @@
 			<Feature Id='LuaDura.exe' Title='Main executable' Level='1'>			
 				<ComponentRef Id='lua52.exe' />
 			</Feature>
-			<Feature Id='readline6.dll' Title='History and completion support' Level='1'>			
-				<ComponentRef Id='readline6.dll' />
+			<Feature Id='readline.dll' Title='History and completion support' Level='1'>			
+				<ComponentRef Id='readline.dll' />
+				<ComponentRef Id='lua.utils' />
+				<ComponentRef Id='shortcut.readline' />
 			</Feature>
-			<Feature Id='UpdatePath' Title='Add LuaDura to PATH' Level='1'>			
+			<Feature Id='UpdatePath' Title='Add Lua 5.2 to PATH' Level='1'>			
 				<ComponentRef Id='UpdatePath' />
 			</Feature>
 		</Feature>
