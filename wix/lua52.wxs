@@ -40,7 +40,7 @@
 			</Directory>			
 			<Directory Id='doc' Name='doc' FileSource='../doc'>
 				<Directory Id='Lua5.2' Name='Lua5.2'>
-					<Component Id='doc.Lua5.2' Guid='EB7D6BA8-2E3F-4FB1-BB51-8D93A52E15F0' >
+					<Component Id='doc.lua52' Guid='EB7D6BA8-2E3F-4FB1-BB51-8D93A52E15F0' >
 						<File Id='doc.lua.contents.html'   Name='contents.html' />
 						<File Id='doc.lua.logo.gif'        Name='logo.gif' />
 						<File Id='doc.lua.lua.css'         Name='lua.css' />
@@ -58,6 +58,37 @@
 						<File Id='doc.lfs.manual.html'         Name='manual.html' />
 					</Component>
 				</Directory>
+				<Directory Id='LuaSQL' Name='LuaSQL'>
+					<Component Id='doc.sql' Guid='53AFA8A7-D5E0-4F65-98A4-D8CCF568E34E'>
+						<File Id='doc.sql.examples.html'    Name='examples.html' />
+						<File Id='doc.sql.history.html'     Name='history.html' />
+						<File Id='doc.sql.index.html'       Name='index.html'    />
+						<File Id='doc.sql.license.html'     Name='license.html' />
+						<File Id='doc.sql.luasql.png'       Name='luasql.png'   />
+						<File Id='doc.sql.manual.html'      Name='manual.html'  />
+					</Component>
+				</Directory>
+				<Directory Id='LuaSocket' Name='LuaSocket'>
+					<Component Id='doc.socket' Guid='76006E0B-68AC-42AA-8B6B-40CA55A4DA52' >
+						<File Id='doc.socket.dns.html'             Name='dns.html'           />
+						<File Id='doc.socket.ftp.html'             Name='ftp.html'          />
+						<File Id='doc.socket.http.html'            Name='http.html'          />
+						<File Id='doc.socket.index.html'           Name='index.html'        />
+						<File Id='doc.socket.installation.html'    Name='installation.html' />
+						<File Id='doc.socket.introduction.html'    Name='introduction.html' />
+						<File Id='doc.socket.ltn12.html'           Name='ltn12.html'        />
+						<File Id='doc.socket.luasocket.png'        Name='luasocket.png'     />
+						<File Id='doc.socket.mime.html'            Name='mime.html'         />
+						<File Id='doc.socket.reference.css'        Name='reference.css'     />
+						<File Id='doc.socket.reference.html'       Name='reference.html'    />
+						<File Id='doc.socket.smtp.html'            Name='smtp.html'         />
+						<File Id='doc.socket.socket.html'          Name='socket.html'       />
+						<File Id='doc.socket.tcp.html'             Name='tcp.html'          />
+						<File Id='doc.socket.udp.html'             Name='udp.html'         />
+						<File Id='doc.socket.url.html'             Name='url.html'          />
+					</Component>
+				</Directory>
+
 			</Directory>
 		</DirectoryRef>
 
@@ -83,7 +114,7 @@
 		                  Target="[APPLICATIONFOLDER]lua52.exe"
 		                  Icon='LuaIcon'/>
 				    <Shortcut Id="UninstallProduct"             
-				          Name="Uninstall LuaDura"
+				          Name="Uninstall Lua 5.2"
 				          Target="[SystemFolder]msiexec.exe"
 				          Arguments="/x [ProductCode]"
 				          Description="Uninstalls Lua 5.2" />		                  
@@ -98,35 +129,64 @@
 		                  Icon='LuaIcon'/>
 		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed" Name="completion" Type="integer" Value="1" KeyPath="yes"/>
 		    </Component>
-		    <Component Id="shortcut.doc" Guid="F97C8305-402A-4971-95E7-F4B3E20316D2">
-		        <Shortcut Id="shortcut.lua.reference" Name="Lua 5.2 Reference Manual"
+				<Directory Id='shortcut.doc' Name='Documentation'>
+		    	<Component Id="shortcut.doc.lua52" Guid="F97C8305-402A-4971-95E7-F4B3E20316D2">
+		        <Shortcut Id="shortcut.doc.lua52" Name="Lua 5.2"
 	                  Description="Official documentation of Lua 5.2 from Lua.org"
 	                  Target="[Lua5.2]contents.html" Icon='HelpIcon'/>
-		        <Shortcut Id="shortcut.lfs.reference" Name="LuaFileSystem Documentation"
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="core" Type="integer" Value="1" KeyPath="yes"/>
+		        <RemoveFolder Id="shortcut.doc.lua52" On="uninstall"/>
+		    	</Component>
+		    	<Component Id="shortcut.doc.lfs" Guid="67A80655-47C2-4330-9BC2-0106BEA01290">
+		        <Shortcut Id="shortcut.doc.lfs" Name="LuaFileSystem"
 	                  Description="Documentation of Kepler's LuaFileSystem (lfs) module"
 	                  Target="[LuaFileSystem]index.html" Icon='HelpIcon'/>
-		        <RemoveFolder Id="shortcut.doc" On="uninstall"/>
-		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed" Name="documentation" Type="integer" Value="1" KeyPath="yes"/>
-		    </Component>
+		        <RemoveFolder Id="shortcut.doc.lfs" On="uninstall"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="lfs" Type="integer" Value="1" KeyPath="yes"/>
+		    	</Component>
+		    	<Component Id="shortcut.doc.socket" Guid="BF12E055-DE0B-448F-8D79-7CF19D59D68F">
+		        <Shortcut Id="shortcut.doc.socket" Name="LuaSocket"
+	                  Description="Documentation of LuaSocket networking module"
+	                  Target="[LuaSocket]index.html" Icon='HelpIcon'/>
+		        <RemoveFolder Id="shortcut.doc.socket" On="uninstall"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="socket" Type="integer" Value="1" KeyPath="yes"/>
+		    	</Component>
+		    	<Component Id="shortcut.doc.sql" Guid="856E4582-AB95-411F-B613-277C2876B847">
+		        <Shortcut Id="shortcut.doc.sql" Name="LuaSQL"
+	                  Description="Documentation of LuaSQL and ODBC module"
+	                  Target="[LuaSQL]index.html" Icon='HelpIcon'/>
+		        <RemoveFolder Id="shortcut.doc.sql" On="uninstall"/>
+		        <RegistryValue Root="HKCU" Key="Software\Lua\Lua 5.2\installed\documentation" Name="sql" Type="integer" Value="1" KeyPath="yes"/>
+		    	</Component>
+		    </Directory>
 		</DirectoryRef>
 		
 		<Feature Id='Binaries' Title='Binaries' Level='1'>
-			<Feature Id='LuaDura.exe' Title='Main executable' Level='1'>			
+			<Feature Id='core' Title='Main executable' Level='1'>			
 				<ComponentRef Id='lua52.exe' />
+				<ComponentRef Id='doc.lua52' />
+				<ComponentRef Id='shortcut.doc.lua52' />
 			</Feature>
 			<Feature Id='readline.dll' Title='History and completion support' Level='1'>			
 				<ComponentRef Id='readline.dll' />
 				<ComponentRef Id='lua.utils' />
 				<ComponentRef Id='shortcut.readline' />
 			</Feature>
+			<Feature Id='socket' Title='LuaSocket' Level='1'>			
+				<ComponentRef Id='doc.socket' />
+				<ComponentRef Id='shortcut.doc.socket' />
+			</Feature>
+			<Feature Id='sql' Title='LuaSQL' Level='1'>			
+				<ComponentRef Id='doc.sql' />
+				<ComponentRef Id='shortcut.doc.sql' />
+			</Feature>
 			<Feature Id='UpdatePath' Title='Add Lua 5.2 to PATH' Level='1'>			
 				<ComponentRef Id='UpdatePath' />
 			</Feature>
 		</Feature>
 		<Feature Id='Documentation' Title='Documentation' Level='1'>						
-			<ComponentRef Id='doc.Lua5.2' />
 			<ComponentRef Id='doc.LuaFileSystem' />
-			<ComponentRef Id='shortcut.doc' />
+			<ComponentRef Id='shortcut.doc.lfs' />
 		</Feature>
 		<Feature Id='RegistryEntries' Title='Registers known extensions' Level='1'>						
 			<Feature Id='registry.lua' Title='.lua (Lua scripts)' Level='1'>						
