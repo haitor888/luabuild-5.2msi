@@ -1,0 +1,61 @@
+<?xml version='1.0'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+	<Product Id='*' Name='Lua 5.2' Language='1033'
+		Version='5.2.1.1' Manufacturer='Olivetti' UpgradeCode='61621B5E-32F3-4B7D-8Fc9-5D70C55Ac5Ba' >
+		<Package Description='Lua: a powerful, fast, lightweight, embeddable scripting language'
+			Comments='This installer database contains the logic and data required to install Lua 5.2'
+			Manufacturer='PUC' InstallerVersion='200' Compressed='yes' />
+		<Media Id='1' Cabinet='lua52.cab' EmbedCab='yes' />
+		<MajorUpgrade DowngradeErrorMessage="A later version of Lua is already installed. Setup will now exit." />
+		<Directory Id='TARGETDIR' Name='SourceDir' DiskId='1'>
+			<Directory Id='ProgramFilesFolder' Name="[ApplicationFolderName]" >
+				<Directory Id='APPLICATIONFOLDER' Name='Lua' />
+			</Directory>
+		</Directory>
+	    <Property Id="ApplicationFolderName" Value="Lua\5.2" />
+	    <Property Id="ALLUSERS" Value="2" />
+	    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+	    <UIRef Id="WixUI_Advanced" />
+	    <Icon Id='HelpIcon' SourceFile='res/hlp.ico' />
+	    <Icon Id='LuaIcon' SourceFile='res/lua.ico' />
+	    <Property Id="ARPPRODUCTICON" Value="LuaIcon" />
+
+
+		<DirectoryRef Id='APPLICATIONFOLDER'>
+			<Directory Id='bin' Name='bin'>
+				<Component Id='lua52.exe' Guid='3Ca59152-6D3B-48C4-9D1D-Fe6F20B84F70' >
+					<File Name='lua52.exe' Source='../bin/lua52.exe' Checksum='yes'/>
+					<File Name='lua52.dll' Source='../bin/lua52.dll' Checksum='yes'/>
+				</Component>
+			</Directory>
+		</DirectoryRef>
+
+		<DirectoryRef Id="TARGETDIR">
+			<Component Id='UpdatePath' Guid='D6710230-E962-41F3-B41A-25E8Ace2F2D4' >
+				<Environment Id='UpdatePath' Name='PATH' Action='set' Permanent='no' System='yes' Part='last' Value='[bin]' />
+			</Component>
+		  <Component Id="registry.lua" Guid="Ad0C5631-33E5-427A-9B5D-2D4612Ab0E5B">
+		    <RegistryKey Root="HKCR" Key=".lua" Action="create">
+		        <RegistryValue Type="string" Value="Lua.Lua.run"/>
+		    </RegistryKey>
+		    <RegistryKey Root="HKCR" Key="Lua.Lua.run\shell\open\command" Action="create">
+		        <RegistryValue Type="string" Value="&quot;[bin]lua52.exe&quot; -i &quot;%1&quot;"/>
+		    </RegistryKey>
+			</Component>
+		</DirectoryRef>
+		
+		<Feature Id='Binaries' Title='Binaries' Level='1'>
+			<Feature Id='LuaDura.exe' Title='Main executable' Level='1'>			
+				<ComponentRef Id='lua52.exe' />
+			</Feature>
+			<Feature Id='UpdatePath' Title='Add LuaDura to PATH' Level='1'>			
+				<ComponentRef Id='UpdatePath' />
+			</Feature>
+		</Feature>
+		<Feature Id='RegistryEntries' Title='Registers known extensions' Level='1'>						
+			<Feature Id='registry.lua' Title='.lua (Lua scripts)' Level='1'>						
+				<ComponentRef Id='registry.lua' />
+			</Feature>				
+		</Feature>
+	</Product>
+</Wix>
