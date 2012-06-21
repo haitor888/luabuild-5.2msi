@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
 	<Product Id='*' Name='Lua 5.2' Language='1033'
-		Version='5.2.1.1' Manufacturer='Olivetti' UpgradeCode='61621B5E-32F3-4B7D-8FC9-5D70C55AC5BA' >
+		Version='5.2.1.2' Manufacturer='Olivetti' UpgradeCode='61621B5E-32F3-4B7D-8FC9-5D70C55AC5BA' >
 		<Package Description='Lua: a powerful, fast, lightweight, embeddable scripting language'
 			Comments='This installer database contains the logic and data required to install Lua 5.2'
 			Manufacturer='PUC' InstallerVersion='200' Compressed='yes' />
@@ -31,7 +31,7 @@
 			</Component>
 			<Component Id='bin.readline' Guid='15E38374-1D30-4797-A4AD-CE9FEF279A28' >
 				<File Name='readline6.dll' Source='res/readline6.dll'  Checksum='yes'/>
-				<File Name='lreadline.dll' Source='res/lreadline.dll'  Checksum='yes'/>
+				<File Name='lreadline.dll' Checksum='yes'/>
 			</Component>
 			<Component Id='bin.lpeg' Guid='58D966C2-15FA-4FFC-A03A-F4B29C6DCC9A' >
 				<File Name='lpeg.dll' Checksum='yes'/>
@@ -59,7 +59,7 @@
 			</Directory>			
 			<Directory Id='lua' Name='lua' FileSource='../lua'>
 				<Component Id='lua.readline' Guid='A6D55CD0-A92F-4DFA-A9C0-D7B6298EE057' >
-					<File Id='lua.utils.lua' Name='utils.lua' Source='res/utils.lua' />
+					<File Id='lua.utils.lua' Name='utils.lua' />
 				</Component>
 				<Component Id='lua.socket.main' Guid='AA1E0509-4868-4C6B-A6DB-164CCCDC951E' >
  					<File Id='lua.socket.lua' Name='socket.lua' />

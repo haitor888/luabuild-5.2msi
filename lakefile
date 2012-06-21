@@ -29,7 +29,8 @@ local function load_config (src, env, dont_quit)
         chunk,err = load(str,src,'t',env)
         if not chunk then quit(err) end
     end
-    if not pcall(chunk) then quit(err) end
+    str, err = pcall(chunk)
+    if not str then quit(err) end
     return env
 end
 

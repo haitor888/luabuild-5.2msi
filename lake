@@ -52,8 +52,8 @@ WINDOWS = DIRSEP == '\\'
 -- search for '--end_of_libs' to skip to the Meat of the Matter!
 
 function warning(reason,...)
-    local str = reason:format(...)
-    io.stderr:write('lake: ',str,'\n')
+    local str = (reason or ""):format(...)
+    io.stderr:write('lake: ',str,'\n', debug.traceback())
 end
 
 function quit(reason,...)
