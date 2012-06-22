@@ -10,3 +10,4 @@ test/
 *.bak
 current_modules
 lua-5.2.1/linit.c
+modules/luaposix/config.h

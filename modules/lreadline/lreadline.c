@@ -528,13 +528,14 @@ static const char *get_prompt (lua_State *L, int firstline) {
   return p;
 }
 
+#define EOFMARK		"<eof>"
+#define marklen		(sizeof(EOFMARK)/sizeof(char) - 1)
 
 static int incomplete (lua_State *L, int status) {
   if (status == LUA_ERRSYNTAX) {
     size_t lmsg;
     const char *msg = lua_tolstring(L, -1, &lmsg);
-    const char *tp = msg + lmsg - (sizeof(LUA_QL("<eof>")) - 1);
-    if (strstr(msg, LUA_QL("<eof>")) == tp) {
+    if (lmsg >= marklen && strcmp(msg + lmsg - marklen, EOFMARK) == 0) {
       lua_pop(L, 1);
       return 1;
     }
