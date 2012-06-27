@@ -9,7 +9,7 @@ end
 local server = arg[3] or "http://freedb.freedb.org/~cddb/cddb.cgi"
 
 function parse(body)
-    local lines = string.gfind(body, "(.-)\r\n")
+    local lines = string.gmatch(body, "(.-)\r\n")
     local status = lines()
     local code, message = socket.skip(2, string.find(status, "(%d%d%d) (.*)"))
     if tonumber(code) ~= 210 then

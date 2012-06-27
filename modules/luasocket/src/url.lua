@@ -11,7 +11,6 @@
 local string = require("string")
 local base = _G
 local table = require("table")
---module("socket.url")
 socket.url = {}
 local _M = {}
 
@@ -257,7 +256,7 @@ function _M.parse_path(path)
 	path = path or ""
 	--path = string.gsub(path, "%s", "")
 	string.gsub(path, "([^/]+)", function (s) table.insert(parsed, s) end)
-	for i = 1, table.getn(parsed) do
+	for i = 1, #parsed do
 		parsed[i] = _M.unescape(parsed[i])
 	end
 	if string.sub(path, 1, 1) == "/" then parsed.is_absolute = 1 end
@@ -275,7 +274,7 @@ end
 -----------------------------------------------------------------------------
 function _M.build_path(parsed, unsafe)
 	local path = ""
-	local n = table.getn(parsed)
+	local n = #parsed
 	if unsafe then
 		for i = 1, n-1 do
 			path = path .. parsed[i]
@@ -298,3 +297,5 @@ function _M.build_path(parsed, unsafe)
 	if parsed.is_absolute then path = "/" .. path end
 	return path
 end
+
+return _M

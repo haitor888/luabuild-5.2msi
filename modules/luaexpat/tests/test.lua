@@ -293,14 +293,14 @@ assert(not status and string.find(err, "error closing parser"))
 --[[ -- likely to need some adjustment for 5.2 --
 print("\ntesting garbage collection")
 collectgarbage(); collectgarbage()
-local x = gcinfo()
+local x = collectgarbage("count")
 for i=1,100000 do
   -- due to a small bug in Lua...
-  if math.mod(i, 100) == 0 then collectgarbage() end
+  if i % 100 == 0 then collectgarbage() end
   lxp.new({})
 end
 collectgarbage(); collectgarbage()
-assert(math.abs(gcinfo() - x) <= 2)
+assert(math.abs(collectgarbage("count") - x) <= 2)
 ]]
 
 print"OK"

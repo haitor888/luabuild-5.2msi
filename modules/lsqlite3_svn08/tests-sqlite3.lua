@@ -31,7 +31,6 @@ require "lsqlite3"
 
 require "lunit"
 
-lunit.setprivfenv()
 lunit.import "assertions"
 lunit.import "checks"
 

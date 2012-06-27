@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
 	<Product Id='*' Name='Lua 5.2' Language='1033'
-		Version='5.2.1.4' Manufacturer='Olivetti' UpgradeCode='61621B5E-32F3-4B7D-8FC9-5D70C55AC5BA' >
+		Version='5.2.1.5' Manufacturer='Olivetti' UpgradeCode='61621B5E-32F3-4B7D-8FC9-5D70C55AC5BA' >
 		<Package Description='Lua: a powerful, fast, lightweight, embeddable scripting language'
 			Comments='This installer database contains the logic and data required to install Lua 5.2'
 			Manufacturer='PUC' InstallerVersion='200' Compressed='yes' />

@@ -46,9 +46,8 @@ for name, func in pairs(math) do fenv[name] = func end
 
 -- evaluate the function passed as a string for one value
 function evaluate(func, x)
-	local f = loadstring("return "..func)
-	fenv['x'] = x
-	setfenv(f, fenv)
+	local f = load("return "..func, nil, "t", fenv)
+	fenv.x = x
 	local ok, val = pcall(f)
 	if ok then return val else return ok, val end
 end

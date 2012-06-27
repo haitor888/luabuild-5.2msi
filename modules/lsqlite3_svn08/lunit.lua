@@ -55,12 +55,11 @@ local setmetatable = setmetatable
 local rawset = rawset
 local orig_assert = assert
 local getfenv = getfenv
-local setfenv = setfenv
 local tostring = tostring
 
 
 -- Start package scope
-setfenv(1, P)
+local _ENV = P
 
 
 
@@ -452,10 +451,10 @@ function run()
   -- Count Test Cases and Tests --
   --------------------------------
   
-  stats.testcases = table.getn(testcases)
+  stats.testcases = #testcases
   
   for _, tc in ipairs(testcases) do
-    stats_inc("tests" , table.getn(tc.__lunit_tests))
+    stats_inc("tests" , #tc.__lunit_tests)
   end
   
   ------------------
@@ -575,7 +574,7 @@ function run_testcase(tc)
   ---------------------------------
   
   print()
-  print("#### Running '"..tc.__lunit_name.."' ("..table.getn(tc.__lunit_tests).." Tests)...")
+  print("#### Running '"..tc.__lunit_name.."' ("..#tc.__lunit_tests.." Tests)...")
   
   for _, testname in ipairs(tc.__lunit_tests) do
     if setup(testname) then
@@ -660,22 +659,6 @@ function import(name)
 end
 
 
-
-
---------------------------------------------------
--- Installs a private environment on the caller --
---------------------------------------------------
-
-function setprivfenv()
-  local new_env = { }
-  local new_env_mt = { __index = getfenv(2) }
-  setmetatable(new_env, new_env_mt)
-  setfenv(2, new_env)
-end
-
-
-
-
 --------------------------------------------------
 -- Increments a counter in the statistics table --  
 --------------------------------------------------
@@ -688,6 +671,4 @@ function stats_inc(varname, value)
   stats[varname] = stats[varname] + (value or 1)
 end
 
-
-
-
+return P

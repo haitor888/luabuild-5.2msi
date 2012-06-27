@@ -15,7 +15,8 @@ local string = require("string")
 local socket = require("socket")
 local ltn12 = require("ltn12")
 local url = require("socket.url")
-module("socket.tftp")
+local _ENV = {}
+socket.tftp = _ENV
 
 -----------------------------------------------------------------------------
 -- Program constants
@@ -44,7 +45,7 @@ end
 
 local function ACK(block)
 	local low, high
-	low = math.mod(block, 256)
+	low = block % 256
 	high = (block - low)/256
 	return char(0, OP_ACK, high, low)
 end
@@ -153,3 +154,4 @@ get = socket.protect(function(gett)
     else return tget(gett) end
 end)
 
+return _ENV

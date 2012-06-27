@@ -3,8 +3,6 @@ local socket = require"socket"
 host = host or "localhost"
 port = port or "8383"
 
-math.mod = math.mod or function(x,y) return x % y end
-
 local outf = io.stdout
 
 function pass(...)
@@ -149,7 +147,7 @@ end
 function test_asciiline(len)
     reconnect()
     local str, str10, back, err
-    str = string.rep("x", math.mod(len, 10))
+    str = string.rep("x", len % 10)
     str10 = string.rep("aZb.c#dAe?", math.floor(len/10))
     str = str .. str10
 remote "str = data:receive()"
@@ -166,7 +164,7 @@ end
 function test_rawline(len)
     reconnect()
     local str, str10, back, err
-    str = string.rep(string.char(47), math.mod(len, 10))
+    str = string.rep(string.char(47), len % 10)
     str10 = string.rep(string.char(120,21,77,4,5,0,7,36,44,100), 
             math.floor(len/10))
     str = str .. str10

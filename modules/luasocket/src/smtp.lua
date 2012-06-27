@@ -17,7 +17,6 @@ local socket = require("socket")
 local tp = require("socket.tp")
 local ltn12 = require("ltn12")
 local mime = require("mime")
---module("socket.smtp")
 local _M = {}
 socket.smtp = _M
 

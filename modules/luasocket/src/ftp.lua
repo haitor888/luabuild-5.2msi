@@ -16,7 +16,6 @@ local socket = require("socket")
 local url = require("socket.url")
 local tp = require("socket.tp")
 local ltn12 = require("ltn12")
---module("socket.ftp")
 socket.ftp = {}
 local _M = socket.ftp
 
@@ -93,7 +92,7 @@ function metat.__index:port(ip, port)
         ip, port = self.try(self.server:getsockname())
         self.try(self.server:settimeout(_M.TIMEOUT))
     end
-    local pl = math.mod(port, 256)
+    local pl = port % 256
     local ph = (port - pl)/256
     local arg = string.gsub(string.format("%s,%d,%d", ip, ph, pl), "%.", ",")
     self.try(self.tp:command("port", arg))

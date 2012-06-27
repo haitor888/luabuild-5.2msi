@@ -11,8 +11,7 @@
 local string = require("string")
 local table = require("table")
 local base = _G
---module("ltn12")
-ltn12 = {}
+local ltn12 = {}
 local _M = ltn12
 
 local filter,source,sink,pump = {},{},{},{}

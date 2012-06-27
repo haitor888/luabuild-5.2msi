@@ -11,3 +11,4 @@ test/
 current_modules
 lua-5.2.1/linit.c
 modules/luaposix/config.h
+modules/lsqlite3_svn08/test.db

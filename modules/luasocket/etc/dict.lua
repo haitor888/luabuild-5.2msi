@@ -14,7 +14,8 @@ local table = require("table")
 local socket = require("socket")
 local url = require("socket.url")
 local tp = require("socket.tp")
-module("socket.dict")
+local _ENV = {}
+socket.dict = _ENV
 
 -----------------------------------------------------------------------------
 -- Globals
@@ -150,3 +151,4 @@ get = socket.protect(function(gett)
     else return tget(gett) end
 end)
 
+return _ENV

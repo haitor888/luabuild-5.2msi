@@ -15,7 +15,6 @@ local mime = require("mime")
 local string = require("string")
 local base = _G
 local table = require("table")
---module("socket.http")
 socket.http = {}
 local _M = socket.http
 

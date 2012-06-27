@@ -8,7 +8,7 @@ local base = _G
 local table = require("table")
 local socket = require("socket")
 local coroutine = require("coroutine")
-module("dispatch")
+local _ENV = {}
 
 -- if too much time goes by without any activity in one of our sockets, we
 -- just kill it
@@ -51,7 +51,7 @@ function socket.protect(f)
   return function(...)
     local co = coroutine.create(f)
     while true do
-      local results = {coroutine.resume(co, base.unpack(arg))}
+      local results = {coroutine.resume(co, table.unpack(arg))}
       local status = table.remove(results, 1)
       if not status then
         if type(results[1]) == 'table' then
@@ -59,9 +59,9 @@ function socket.protect(f)
         else base.error(results[1]) end
       end
       if coroutine.status(co) == "suspended" then
-        arg = {coroutine.yield(base.unpack(results))}
+        arg = {coroutine.yield(table.unpack(results))}
       else
-        return base.unpack(results)
+        return table.unpack(results)
       end
     end
   end
@@ -77,7 +77,7 @@ local function newset()
         insert = function(set, value)
             if not reverse[value] then
                 table.insert(set, value)
-                reverse[value] = table.getn(set)
+                reverse[value] = #set
             end
         end,
         remove = function(set, value)
@@ -106,7 +106,7 @@ local function cowrap(dispatcher, tcp, error)
     local metat = { __index = function(table, key)
         table[key] = function(...)
             arg[1] = tcp
-            return tcp[key](base.unpack(arg))
+            return tcp[key](table.unpack(arg))
         end
         return table[key]
     end}
@@ -300,3 +300,4 @@ function handlert.coroutine()
     return base.setmetatable(dispatcher, cometat)
 end
 
+return _ENV
