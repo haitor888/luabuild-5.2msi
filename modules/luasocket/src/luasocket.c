@@ -20,10 +20,6 @@
 #include "lua.h"
 #include "lauxlib.h"
 
-#if !defined(LUA_VERSION_NUM) || (LUA_VERSION_NUM < 501)
-#include "compat-5.1.h"
-#endif
-
 /*=========================================================================*\
 * LuaSocket includes
 \*=========================================================================*/
@@ -114,7 +110,7 @@ void luaL_openlib(lua_State *L, const char *name, const luaL_Reg *funcs, int idx
 static int base_open(lua_State *L) {
     if (socket_open()) {
         /* export functions (and leave namespace table on top of stack) */
-        luaL_openlib(L, "socket", func, 0);
+        luaL_newlib(L, func);
 #ifdef LUASOCKET_DEBUG
         lua_pushstring(L, "_DEBUG");
         lua_pushboolean(L, 1);
